@@ -58,6 +58,8 @@ abstract class TweetSet extends TweetSetInterface {
    */
   def mostRetweeted: Tweet
 
+  def mostRetweetedAcc(mostRetweeted: Tweet): Tweet
+
   /**
    * Returns a list containing all tweets of this set, sorted by retweet count
    * in descending order. In other words, the head of the resulting list should
@@ -103,6 +105,8 @@ class Empty extends TweetSet {
 
   override def mostRetweeted: Tweet = throw new NoSuchElementException("mostRetweeted on empty set")
 
+  override def mostRetweetedAcc(mostRetweeted: Tweet): Tweet = mostRetweeted
+
   override def descendingByRetweet: TweetList = Nil
 
   /**
@@ -121,15 +125,21 @@ class Empty extends TweetSet {
 class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
   override def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = {
-    var result = acc
-    foreach(t => if (p(t)) result = result.incl(t))
-    result
+    if (p(elem)) {
+      left.filterAcc(p, right.filterAcc(p, acc.incl(elem)))
+    } else {
+      left.filterAcc(p, right.filterAcc(p, acc))
+    }
   }
 
-  override def mostRetweeted: Tweet = {
-    var mostRetweeted = elem
-    foreach(t => if (t.retweets > mostRetweeted.retweets) mostRetweeted = t)
-    mostRetweeted
+  override def mostRetweeted: Tweet = mostRetweetedAcc(elem)
+
+  override def mostRetweetedAcc(mostRetweeted: Tweet): Tweet = {
+    if (elem.retweets > mostRetweeted.retweets) {
+      left.mostRetweetedAcc(right.mostRetweetedAcc(elem))
+    } else {
+      left.mostRetweetedAcc(right.mostRetweetedAcc(mostRetweeted))
+    }
   }
 
   override def descendingByRetweet: TweetList = {
