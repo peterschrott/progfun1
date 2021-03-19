@@ -1,30 +1,6 @@
+import week3._
+
 import scala.annotation.tailrec
-
-import java.util.NoSuchElementException
-
-trait List[T] {
-
-  def isEmpty: Boolean
-  def nonEmpty: Boolean = !isEmpty
-
-  def head: T
-
-  def tail: List[T]
-}
-
-class Cons[T](override val head: T, override val tail: List[T]) extends List[T] {
-
-  override def isEmpty: Boolean = false
-}
-
-class Nil[T] extends List[T] {
-
-  override def isEmpty: Boolean = true
-
-  override def head: Nothing = throw new NoSuchElementException("Nil.head")
-
-  override def tail: Nothing = throw new NoSuchElementException("Nil.tail")
-}
 
 def singleton[T](element: T) = new Cons[T](element, new Nil[T])
 
