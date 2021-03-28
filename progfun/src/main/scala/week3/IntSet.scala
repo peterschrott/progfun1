@@ -9,7 +9,7 @@ abstract class IntSet {
   def union(other: IntSet): IntSet
 }
 
-case class NonEmpty(e: Int, l: IntSet, r: IntSet) extends IntSet {
+class NonEmpty(e: Int, l: IntSet, r: IntSet) extends IntSet {
 
   override def contains(x: Int): Boolean = {
     if (x < e) l contains x
@@ -18,8 +18,8 @@ case class NonEmpty(e: Int, l: IntSet, r: IntSet) extends IntSet {
   }
 
   override def incl(x: Int): IntSet = {
-    if (x < e) NonEmpty(e, l incl x, r)
-    else if (x > e) NonEmpty(e, l, r incl x)
+    if (x < e) new NonEmpty(e, l incl x, r)
+    else if (x > e) new NonEmpty(e, l, r incl x)
     else this
   }
 
@@ -30,11 +30,11 @@ case class NonEmpty(e: Int, l: IntSet, r: IntSet) extends IntSet {
   override  def toString: String = s"{$l $e $r}"
 }
 
-case object Empty extends IntSet {
+object Empty extends IntSet {
 
   override def contains(x: Int) = false
 
-  override def incl(x: Int): IntSet = NonEmpty(x, Empty, Empty)
+  override def incl(x: Int): IntSet = new NonEmpty(x, Empty, Empty)
 
   override def union(other: IntSet): IntSet = other
 

@@ -2,7 +2,7 @@ package week3
 
 import java.util.NoSuchElementException
 
-trait List[T] {
+trait List[+T] {
 
   def isEmpty: Boolean
   def nonEmpty: Boolean = !isEmpty
@@ -10,14 +10,16 @@ trait List[T] {
   def head: T
 
   def tail: List[T]
+
+  def prepend[U >: T](e: U): List[U] = new Cons[U](e, this)
 }
 
-class Cons[T](override val head: T, override val tail: List[T]) extends List[T] {
+case class Cons[T](override val head: T, override val tail: List[T]) extends List[T] {
 
   override def isEmpty: Boolean = false
 }
 
-class Nil[T] extends List[T] {
+object Nil extends List[Nothing] {
 
   override def isEmpty: Boolean = true
 
